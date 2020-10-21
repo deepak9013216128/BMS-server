@@ -9,7 +9,7 @@ const categorySchema = new Schema({
   },
   bookmarks: [{
     type: Schema.Types.ObjectId,
-    ref='Bookmark'
+    ref: 'Bookmark'
   }],
 });
 

@@ -1,8 +1,60 @@
+const { validationResult } = require('express-validator');
 
+const Tab = require('../models/tab');
+const User = require('../models/user');
 
 exports.getTabs = (req, res, next) => {
-  res.status(200).json({
-    title: 'first tab',
-    category: []
+
+  Tab.find()
+    .then(tabs => {
+      res.status(200).json({
+        message: 'Fetch tabs successfully',
+        tabs: tabs
+      })
+    })
+    .catch(err => {
+      if (!err.statusCode) {
+        err.statusCode = 500
+      }
+      next(err)
+    })
+}
+
+exports.createTab = (req, res, next) => {
+
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    const error = new Error(errors.array()[0].msg)
+    error.statusCode = 422;
+    error.data = errors.array();
+    throw error;
+  }
+
+  const { title } = req.body;
+  const tab = new Tab({
+    title: title
   })
+  tab.save()
+    // .then(() => {
+    //   return User.findById(req.userId)
+    // })
+    // .then(user => {
+    //   creator = user;
+    //   user.tabs.push(tab);
+    //   return user.save();
+    // })
+    .then(result => {
+      return res.status(201).json({
+        message: 'tab created successfully!',
+        tab: tab,
+        // creater: { _id: creator._id, name: creator.name }
+      })
+    })
+    .catch(err => {
+      if (!err.statusCode) {
+        err.statusCode = 500
+      }
+      next(err)
+    })
 }

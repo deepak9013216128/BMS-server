@@ -16,7 +16,7 @@ const bookmarkSchema = new Schema(
       type: String,
       default: 'note'
     },
-    categoryId: {
+    category: {
       type: Schema.Types.ObjectId,
       ref: 'Category',
       required: true

@@ -7,9 +7,9 @@ const tabSchema = new Schema({
     type: String,
     required: true
   },
-  category: [{
+  categories: [{
     type: Schema.Types.ObjectId,
-    ref='Category'
+    ref: 'Category'
   }],
 });
 
