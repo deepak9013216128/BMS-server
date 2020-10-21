@@ -8,6 +8,8 @@ const router = express.Router();
 
 router.get('/', tabController.getTabs)
 
+router.get('/:tabId', tabController.getTab)
+
 router.post('/', [
   body('title')
     .isString()

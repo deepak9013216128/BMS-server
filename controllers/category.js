@@ -1,5 +1,4 @@
 const { validationResult } = require('express-validator');
-const category = require('../models/category');
 
 const Category = require('../models/category');
 const Tab = require('../models/tab');
@@ -11,6 +10,28 @@ exports.getCategories = (req, res, next) => {
       return res.status(200).json({
         message: 'Fetch category successfully',
         categories: categories
+      })
+    })
+    .catch(err => {
+      if (!err.statusCode) {
+        err.statusCode = 500
+      }
+      next(err)
+    })
+}
+
+exports.getCategory = (req, res, next) => {
+  const { categoryId } = req.params;
+  Category.findById(categoryId)
+    .then(category => {
+      if (!category) {
+        const error = new Error('Could not find category');
+        error.statusCode = 404;
+        throw error;
+      }
+      return res.status(200).json({
+        message: 'Fetch category successfully',
+        category: category
       })
     })
     .catch(err => {
@@ -33,7 +54,6 @@ exports.createCategory = (req, res, next) => {
   }
 
   const { title } = req.body;
-  let loadedTab;
   const category = new Category({
     title: title
   })
@@ -42,7 +62,11 @@ exports.createCategory = (req, res, next) => {
       return Tab.findById(req.body._id)
     })
     .then(tab => {
-      loadedTab = tab;
+      if (!tab) {
+        const error = new Error('invalid tab id.');
+        error.statusCode = 404;
+        throw error;
+      }
       tab.categories.push(category);
       return tab.save();
     })
@@ -50,7 +74,6 @@ exports.createCategory = (req, res, next) => {
       return res.status(201).json({
         message: 'category created successfully!',
         category: category,
-        // creater: { _id: creator._id, name: creator.name }
       })
     })
     .catch(err => {

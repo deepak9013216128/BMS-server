@@ -9,6 +9,8 @@ const router = express.Router();
 
 router.get('/', categoryController.getCategories)
 
+router.get('/:categoryId', categoryController.getCategory)
+
 router.post('/', [
   body('title')
     .isString()
@@ -24,16 +26,6 @@ router.post('/', [
           return true;
         })
     }),
-  body('_id')
-    .custom((value, { req }) => {
-      return Tab.findById(value)
-        .then(tab => {
-          if (!tab) {
-            return Promise.reject('Invalid Id.')
-          }
-          return true;
-        })
-    })
 ], categoryController.createCategory)
 
 

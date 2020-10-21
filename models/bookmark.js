@@ -22,11 +22,11 @@ const bookmarkSchema = new Schema(
       required: true
     },
     tags: [String],
-    creator: {
-      type: Schema.Types.ObjectId,
-      ref: 'User',
-      required: true
-    }
+    // creator: {
+    //   type: Schema.Types.ObjectId,
+    //   ref: 'User',
+    //   required: true
+    // }
   },
   { timestamps: true }
 );

@@ -20,6 +20,28 @@ exports.getTabs = (req, res, next) => {
     })
 }
 
+exports.getTab = (req, res, next) => {
+  const { tabId } = req.params;
+  Tab.findById(tabId)
+    .then(tab => {
+      if (!tab) {
+        const error = new Error('Could not find tab');
+        error.statusCode = 404;
+        throw error;
+      }
+      res.status(200).json({
+        message: 'Fetch tab successfully',
+        tab: tab
+      })
+    })
+    .catch(err => {
+      if (!err.statusCode) {
+        err.statusCode = 500
+      }
+      next(err)
+    })
+}
+
 exports.createTab = (req, res, next) => {
 
   const errors = validationResult(req);
@@ -48,7 +70,6 @@ exports.createTab = (req, res, next) => {
       return res.status(201).json({
         message: 'tab created successfully!',
         tab: tab,
-        // creater: { _id: creator._id, name: creator.name }
       })
     })
     .catch(err => {
