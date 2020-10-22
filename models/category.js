@@ -14,7 +14,12 @@ const categorySchema = new Schema({
   tab: {
     type: Schema.Types.ObjectId,
     ref: 'Tab'
-  }
+  },
+  // creator: {
+  //   type: Schema.Types.ObjectId,
+  //   ref: 'User',
+  //   required: true
+  // }
 });
 
 module.exports = mongoose.model('Category', categorySchema);

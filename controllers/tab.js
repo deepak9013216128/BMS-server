@@ -104,11 +104,10 @@ exports.deleteTab = (req, res, next) => {
     .then(categories => {
       const bookmarks = [];
       categories.forEach(category => {
-        // console.log(category)
         // bookmarks.concat(category.bookmarks)
         bookmarks.push(...category.bookmarks)
       })
-      console.log(bookmarks)
+      // console.log(bookmarks)
       return Bookmark.deleteMany({ _id: { $in: bookmarks } })
     })
     .then(result => {

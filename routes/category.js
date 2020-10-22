@@ -4,14 +4,15 @@ const { body } = require('express-validator');
 const categoryController = require('../controllers/category');
 const Category = require('../models/category');
 const Tab = require('../models/tab');
+const isAuth = require('../middleware/is-auth');
 
 const router = express.Router();
 
-router.get('/', categoryController.getCategories)
+router.get('/', isAuth, categoryController.getCategories)
 
-router.get('/:categoryId', categoryController.getCategory)
+router.get('/:categoryId', isAuth, categoryController.getCategory)
 
-router.post('/', [
+router.post('/', isAuth, [
   body('title')
     .isString()
     .trim()
@@ -28,7 +29,7 @@ router.post('/', [
     }),
 ], categoryController.createCategory);
 
-router.delete('/:categoryId', categoryController.deleteCategory)
+router.delete('/:categoryId', isAuth, categoryController.deleteCategory)
 
 
 module.exports = router;

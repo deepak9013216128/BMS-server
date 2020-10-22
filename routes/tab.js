@@ -3,14 +3,15 @@ const { body } = require('express-validator')
 
 const tabController = require('../controllers/tab');
 const Tab = require('../models/tab');
+const isAuth = require('../middleware/is-auth');
 
 const router = express.Router();
 
-router.get('/', tabController.getTabs)
+router.get('/', isAuth, tabController.getTabs)
 
-router.get('/:tabId', tabController.getTab)
+router.get('/:tabId', isAuth, tabController.getTab)
 
-router.post('/', [
+router.post('/', isAuth, [
   body('title')
     .isString()
     .trim()
@@ -27,7 +28,7 @@ router.post('/', [
     })
 ], tabController.createTab);
 
-router.delete('/:tabId', tabController.deleteTab)
+router.delete('/:tabId', isAuth, tabController.deleteTab)
 
 
 module.exports = router;

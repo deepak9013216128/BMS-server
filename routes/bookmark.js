@@ -4,14 +4,15 @@ const { body } = require('express-validator')
 const bookmarkController = require('../controllers/bookmark');
 const Bookmark = require('../models/bookmark');
 const Category = require('../models/category');
+const isAuth = require('../middleware/is-auth');
 
 const router = express.Router();
 
-router.get('/', bookmarkController.getBookmarks)
+router.get('/', isAuth, bookmarkController.getBookmarks)
 
-router.get('/:bookmarkId', bookmarkController.getBookmark)
+router.get('/:bookmarkId', isAuth, bookmarkController.getBookmark)
 
-router.post('/', [
+router.post('/', isAuth, [
   body('title')
     .isString()
     .trim()
@@ -34,7 +35,7 @@ router.post('/', [
     .withMessage('minimim one tag is required!'),
 ], bookmarkController.createBookmark);
 
-router.delete('/:bookmarkId', bookmarkController.deleteBookmark)
+router.delete('/:bookmarkId', isAuth, bookmarkController.deleteBookmark)
 
 
 module.exports = router;
