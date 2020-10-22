@@ -7,7 +7,7 @@ const User = require('../models/user');
 
 exports.getTabs = (req, res, next) => {
 
-  Tab.find()
+  Tab.find({ creator: req.userId })
     .then(tabs => {
       res.status(200).json({
         message: 'Fetch tabs successfully',
@@ -29,6 +29,11 @@ exports.getTab = (req, res, next) => {
       if (!tab) {
         const error = new Error('Could not find tab');
         error.statusCode = 404;
+        throw error;
+      }
+      if (tab.creator.toString() !== req.userId) {
+        const error = new Error('Not authorized!')
+        error.statusCode = 403;
         throw error;
       }
       res.status(200).json({
@@ -57,7 +62,8 @@ exports.createTab = (req, res, next) => {
 
   const { title } = req.body;
   const tab = new Tab({
-    title: title
+    title: title,
+    creator: req.userId
   })
   tab.save()
     // .then(() => {
@@ -91,6 +97,11 @@ exports.deleteTab = (req, res, next) => {
       if (!tab) {
         const error = new Error('Tab not Found!');
         error.statusCode = 422;
+        throw error;
+      }
+      if (tab.creator.toString() !== req.userId) {
+        const error = new Error('Not authorized!')
+        error.statusCode = 403;
         throw error;
       }
       loadedTab = tab;

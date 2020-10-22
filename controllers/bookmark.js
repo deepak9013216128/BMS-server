@@ -6,7 +6,7 @@ const User = require('../models/user');
 
 
 exports.getBookmarks = (req, res, next) => {
-  Bookmark.find()
+  Bookmark.find({ creator: req.userId })
     .then(bookmarks => {
       return res.status(200).json({
         message: 'Fetch bookmarks successfully',
@@ -28,6 +28,11 @@ exports.getBookmark = (req, res, next) => {
       if (!bookmark) {
         const error = new Error('Could not find bookmark');
         error.statusCode = 404;
+        throw error;
+      }
+      if (bookmark.creator.toString() !== req.userId) {
+        const error = new Error('Not authorized!')
+        error.statusCode = 403;
         throw error;
       }
       return res.status(200).json({
@@ -59,7 +64,8 @@ exports.createBookmark = (req, res, next) => {
     title: title,
     url: url,
     tags: tags,
-    category: req.body._id
+    category: req.body._id,
+    creator: req.userId
   })
 
   Category.findById(req.body._id)
@@ -98,6 +104,11 @@ exports.deleteBookmark = (req, res, next) => {
       if (!bookmark) {
         const error = new Error('Bookmark not Found!');
         error.statusCode = 422;
+        throw error;
+      }
+      if (bookmark.creator.toString() !== req.userId) {
+        const error = new Error('Not authorized!')
+        error.statusCode = 403;
         throw error;
       }
       loadedBookmark = bookmark;

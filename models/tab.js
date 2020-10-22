@@ -11,11 +11,11 @@ const tabSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'Category'
   }],
-  // creator: {
-  //   type: Schema.Types.ObjectId,
-  //   ref: 'User',
-  //   required: true
-  // }
+  creator: {
+    type: Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
+  }
 });
 
 module.exports = mongoose.model('Tab', tabSchema);

@@ -6,7 +6,7 @@ const Tab = require('../models/tab');
 const User = require('../models/user');
 
 exports.getCategories = (req, res, next) => {
-  Category.find()
+  Category.find({ creator: req.userId })
     .then(categories => {
       return res.status(200).json({
         message: 'Fetch category successfully',
@@ -28,6 +28,11 @@ exports.getCategory = (req, res, next) => {
       if (!category) {
         const error = new Error('Could not find category');
         error.statusCode = 404;
+        throw error;
+      }
+      if (category.creator.toString() !== req.userId) {
+        const error = new Error('Not authorized!')
+        error.statusCode = 403;
         throw error;
       }
       return res.status(200).json({
@@ -57,7 +62,8 @@ exports.createCategory = (req, res, next) => {
   const { title } = req.body;
   const category = new Category({
     title: title,
-    tab: req.body._id
+    tab: req.body._id,
+    creator: req.userId
   })
 
   Tab.findById(req.body._id)
@@ -96,6 +102,11 @@ exports.deleteCategory = (req, res, next) => {
       if (!category) {
         const error = new Error('Category not Found!');
         error.statusCode = 422;
+        throw error;
+      }
+      if (category.creator.toString() !== req.userId) {
+        const error = new Error('Not authorized!')
+        error.statusCode = 403;
         throw error;
       }
       loadedCategory = category;
