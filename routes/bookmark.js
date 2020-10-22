@@ -32,7 +32,9 @@ router.post('/', [
   body('tags')
     .isArray({ min: 1 })
     .withMessage('minimim one tag is required!'),
-], bookmarkController.createBookmark)
+], bookmarkController.createBookmark);
+
+router.delete('/:bookmarkId', bookmarkController.deleteBookmark)
 
 
 module.exports = router;

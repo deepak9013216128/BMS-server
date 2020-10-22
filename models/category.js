@@ -11,6 +11,10 @@ const categorySchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'Bookmark'
   }],
+  tab: {
+    type: Schema.Types.ObjectId,
+    ref: 'Tab'
+  }
 });
 
 module.exports = mongoose.model('Category', categorySchema);

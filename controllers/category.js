@@ -1,5 +1,6 @@
 const { validationResult } = require('express-validator');
 
+const Bookmark = require('../models/bookmark');
 const Category = require('../models/category');
 const Tab = require('../models/tab');
 const User = require('../models/user');
@@ -55,25 +56,65 @@ exports.createCategory = (req, res, next) => {
 
   const { title } = req.body;
   const category = new Category({
-    title: title
+    title: title,
+    tab: req.body._id
   })
-  category.save()
-    .then(() => {
-      return Tab.findById(req.body._id)
-    })
+
+  Tab.findById(req.body._id)
     .then(tab => {
       if (!tab) {
-        const error = new Error('invalid tab id.');
+        const error = new Error('Invalid tab id.');
         error.statusCode = 404;
         throw error;
       }
       tab.categories.push(category);
       return tab.save();
     })
+    .then(() => {
+      return category.save()
+    })
     .then(result => {
       return res.status(201).json({
-        message: 'category created successfully!',
+        message: 'Category created successfully!',
         category: category,
+      })
+    })
+    .catch(err => {
+      if (!err.statusCode) {
+        err.statusCode = 500
+      }
+      next(err)
+    })
+}
+
+
+exports.deleteCategory = (req, res, next) => {
+  const { categoryId } = req.params;
+  let loadedCategory;
+  Category.findById(categoryId)
+    .then(category => {
+      if (!category) {
+        const error = new Error('Category not Found!');
+        error.statusCode = 422;
+        throw error;
+      }
+      loadedCategory = category;
+      return Category.findByIdAndRemove(categoryId);
+    })
+    .then(result => {
+      return Tab.findById(loadedCategory.tab);
+    })
+    .then(tab => {
+      tab.categories.pull(categoryId);
+      return tab.save();
+    })
+    .then(result => {
+      return Bookmark.deleteMany({ _id: { $in: loadedCategory.bookmarks } })
+    })
+    .then(result => {
+      res.status(200).json({
+        message: 'Category Deleted!',
+        bookmark: loadedCategory
       })
     })
     .catch(err => {

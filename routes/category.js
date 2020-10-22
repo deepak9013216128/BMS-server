@@ -26,7 +26,9 @@ router.post('/', [
           return true;
         })
     }),
-], categoryController.createCategory)
+], categoryController.createCategory);
+
+router.delete('/:categoryId', categoryController.deleteCategory)
 
 
 module.exports = router;

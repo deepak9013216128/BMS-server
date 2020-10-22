@@ -61,22 +61,23 @@ exports.createBookmark = (req, res, next) => {
     tags: tags,
     category: req.body._id
   })
-  bookmark.save()
-    .then(() => {
-      return Category.findById(req.body._id)
-    })
+
+  Category.findById(req.body._id)
     .then(category => {
       if (!category) {
-        const error = new Error('invalid Category id.');
+        const error = new Error('Category not Found!');
         error.statusCode = 404;
         throw error;
       }
       category.bookmarks.push(bookmark);
       return category.save();
     })
+    .then(() => {
+      return bookmark.save()
+    })
     .then(result => {
       return res.status(201).json({
-        message: 'category created successfully!',
+        message: 'Bookmark created successfully!',
         bookmark: bookmark,
       })
     })
@@ -88,3 +89,37 @@ exports.createBookmark = (req, res, next) => {
     })
 }
 
+exports.deleteBookmark = (req, res, next) => {
+  const { bookmarkId } = req.params;
+
+  let loadedBookmark;
+  return Bookmark.findById(bookmarkId)
+    .then(bookmark => {
+      if (!bookmark) {
+        const error = new Error('Bookmark not Found!');
+        error.statusCode = 422;
+        throw error;
+      }
+      loadedBookmark = bookmark;
+      return Bookmark.findByIdAndRemove(bookmarkId);
+    })
+    .then(result => {
+      return Category.findById(loadedBookmark.category);
+    })
+    .then(category => {
+      category.bookmarks.pull(bookmarkId);
+      return category.save();
+    })
+    .then(result => {
+      res.status(200).json({
+        message: 'Bookmark Deleted!',
+        bookmark: loadedBookmark
+      })
+    })
+    .catch(err => {
+      if (!err.statusCode) {
+        err.statusCode = 500
+      }
+      next(err)
+    })
+}

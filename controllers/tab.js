@@ -1,6 +1,8 @@
 const { validationResult } = require('express-validator');
 
 const Tab = require('../models/tab');
+const Bookmark = require('../models/bookmark');
+const Category = require('../models/category');
 const User = require('../models/user');
 
 exports.getTabs = (req, res, next) => {
@@ -68,8 +70,54 @@ exports.createTab = (req, res, next) => {
     // })
     .then(result => {
       return res.status(201).json({
-        message: 'tab created successfully!',
+        message: 'Tab created successfully!',
         tab: tab,
+      })
+    })
+    .catch(err => {
+      if (!err.statusCode) {
+        err.statusCode = 500
+      }
+      next(err)
+    })
+}
+
+exports.deleteTab = (req, res, next) => {
+  const { tabId } = req.params;
+
+  let loadedTab;
+  Tab.findById(tabId)
+    .then(tab => {
+      if (!tab) {
+        const error = new Error('Tab not Found!');
+        error.statusCode = 422;
+        throw error;
+      }
+      loadedTab = tab;
+      return Tab.findByIdAndRemove(tabId);
+    })
+    .then(result => {
+      return Category.find({ _id: { $in: loadedTab.categories } })
+        .populate('categories')
+      // .execPopulate()
+    })
+    .then(categories => {
+      const bookmarks = [];
+      categories.forEach(category => {
+        // console.log(category)
+        // bookmarks.concat(category.bookmarks)
+        bookmarks.push(...category.bookmarks)
+      })
+      console.log(bookmarks)
+      return Bookmark.deleteMany({ _id: { $in: bookmarks } })
+    })
+    .then(result => {
+      return Category.deleteMany({ _id: { $in: loadedTab.categories } })
+    })
+    .then(result => {
+      res.status(200).json({
+        message: 'Tab Deleted!',
+        bookmark: loadedTab
       })
     })
     .catch(err => {

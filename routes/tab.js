@@ -25,7 +25,9 @@ router.post('/', [
           return true;
         })
     })
-], tabController.createTab)
+], tabController.createTab);
+
+router.delete('/:tabId', tabController.deleteTab)
 
 
 module.exports = router;
