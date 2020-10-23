@@ -1,8 +1,11 @@
 const path = require('path')
-
+const fs = require('fs');
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+const compression = require('compression');
+const helmet = require('helmet');
+const morgan = require('morgan');
 
 const routes = require('./routes/routes');
 
@@ -10,9 +13,16 @@ const MONGODB_URI = 'mongodb+srv://deepak:LHMWm5mwySFXRj8@nodejs.zz6dw.mongodb.n
 
 const app = express();
 
+const accessLogStream = fs.createWriteStream(
+  path.join(__dirname, 'access.log'),
+  { flags: 'a' }
+)
 
 // app.use(bodyParser.urlencoded()) // x-www-form-urlencoded
 app.use(bodyParser.json()) // apllication/json
+app.use(compression())
+app.use(helmet());
+app.use(morgan('tiny', { stream: accessLogStream }))
 
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');

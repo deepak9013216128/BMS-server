@@ -80,3 +80,7 @@ exports.login = (req, res, next) => {
       next(err)
     })
 }
+
+exports.changePassword = (req, res, next) => {
+  res.send(200).json({ message: 'change password' })
+}
