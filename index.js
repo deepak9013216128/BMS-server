@@ -49,7 +49,7 @@ mongoose.connect(
     useCreateIndex: true
   }
 ).then(() => {
-  app.listen(5000, () => {
+  app.listen(process.env.NODE_ENV || 5000, () => {
     console.log('Server is listening on port 5000.')
   })
 })
