@@ -84,3 +84,38 @@ exports.login = (req, res, next) => {
 exports.changePassword = (req, res, next) => {
   res.send(200).json({ message: 'change password' })
 }
+
+exports.getUsers = (req, res, next) => {
+
+  User.findById(req.userId)
+    .then(user => {
+      console.log(user)
+      if (!user) {
+        const error = new Error('User not Found!')
+        error.statusCode = 404;
+        throw error;
+      }
+      if (!user.isAdmin) {
+        const error = new Error('Not authorized!')
+        error.statusCode = 403;
+        throw error;
+      }
+      return User.find({ _id: { $ne: user._id } })
+        .then(users => users.map(u => ({
+          isAdmin: u.isAdmin,
+          tabs: u.tabs,
+          _id: u._id,
+          name: u.name,
+          email: u.email
+        })))
+    })
+    .then(users => {
+      return res.status(200).json({ users: users, message: 'User fetch successfully' })
+    })
+    .catch(err => {
+      if (!err.statusCode) {
+        err.statusCode = 500
+      }
+      next(err)
+    })
+}

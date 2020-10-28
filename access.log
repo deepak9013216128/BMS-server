@@ -1,4 +1,0 @@
-GET /bookmark 401 32 - 6.506 ms
-GET /favicon.ico 404 150 - 1.414 ms
-GET /category 401 32 - 0.656 ms
-GET /favicon.ico 404 150 - 0.332 ms

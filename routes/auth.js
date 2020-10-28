@@ -4,6 +4,7 @@ const { body } = require('express-validator')
 const authController = require('../controllers/auth');
 const User = require('../models/user')
 const Tab = require('../models/tab');
+const isAuth = require('../middleware/is-auth');
 
 const router = express.Router();
 
@@ -38,5 +39,7 @@ router.post('/login', [
     .isLength({ min: 5 })
     .withMessage('Password must be minimum 5 character.'),
 ], authController.login)
+
+router.get('/users', isAuth, authController.getUsers)
 
 module.exports = router;
