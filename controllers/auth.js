@@ -71,7 +71,7 @@ exports.login = (req, res, next) => {
         'my secret key is deepak',
         { expiresIn: '1h' }
       )
-      res.status(200).json({ token: token, userId: loadedUser._id })
+      res.status(200).json({ token: token, userId: loadedUser._id, isAdmin: loadedUser.isAdmin })
     })
     .catch(err => {
       if (!err.statusCode) {
