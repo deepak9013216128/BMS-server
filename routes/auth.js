@@ -42,4 +42,11 @@ router.post('/login', [
 
 router.get('/users', isAuth, authController.getUsers)
 
+router.get('/user', isAuth, authController.getUser)
+
+router.delete('/user/:deleteUserId', isAuth, authController.deleteUser)
+
+router.put('/change-password', isAuth, authController.changePassword)
+
+
 module.exports = router;
