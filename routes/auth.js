@@ -46,7 +46,16 @@ router.get('/user', isAuth, authController.getUser)
 
 router.delete('/user/:deleteUserId', isAuth, authController.deleteUser)
 
-router.put('/change-password', isAuth, authController.changePassword)
+router.put('/change-password', isAuth, [
+  body('oldPassword')
+    .trim()
+    .isLength({ min: 5 })
+    .withMessage('Password must be minimum 5 character.'),
+  body('newPassword')
+    .trim()
+    .isLength({ min: 5 })
+    .withMessage('Password must be minimum 5 character.'),
+], authController.changePassword)
 
 
 module.exports = router;

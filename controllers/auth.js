@@ -174,7 +174,16 @@ exports.getUser = (req, res, next) => {
         throw error;
       }
 
-      return res.status(200).json({ user: user, message: 'User fetch successfully' })
+      return res.status(200)
+        .json({
+          user: {
+            name: user.name,
+            email: user.email,
+            createdAt: user.createdAt,
+            _id: user._id
+          },
+          message: 'User fetch successfully'
+        })
     })
     .catch(err => {
       if (!err.statusCode) {
