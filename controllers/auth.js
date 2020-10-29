@@ -149,7 +149,8 @@ exports.getUsers = (req, res, next) => {
           tabs: u.tabs,
           _id: u._id,
           name: u.name,
-          email: u.email
+          email: u.email,
+          createdAt: u.createdAt
         })))
     })
     .then(users => {
